@@ -43,8 +43,6 @@ int part2(int* arr, int n) {
 
 int main(void) {
     int array[] = {0, 0, 0};
-
     std::cout << "Solution to part one => " << part1() << std::endl;
     std::cout << "Solution to part two => " << part2(array, 0) << std::endl;
-    return 0;
 }
