@@ -25,11 +25,15 @@ func part1() int {
 		charScore = getCharScore()
 		input, _  = os.Open("input.txt")
 		reader    = bufio.NewReader(input)
-		line, _   = reader.ReadString('\n')
 		repeated  byte
 		total     = 0
 	)
-	for line != "" {
+	for {
+	exit:
+		line, _ := reader.ReadString('\n')
+		if line == "" {
+			return total
+		}
 		var (
 			firstPart  = line[:len(line)/2]
 			secondPart = line[len(line)/2:]
@@ -38,14 +42,12 @@ func part1() int {
 			for y := range secondPart {
 				if firstPart[i] == secondPart[y] {
 					repeated = firstPart[i]
-					break
+					total += charScore[repeated]
+					goto exit
 				}
 			}
 		}
-		total += charScore[repeated]
-		line, _ = reader.ReadString('\n')
 	}
-	return total
 }
 
 func part2() int {
@@ -53,30 +55,29 @@ func part2() int {
 		charScore = getCharScore()
 		input, _  = os.Open("input.txt")
 		reader    = bufio.NewReader(input)
-		line1, _  = reader.ReadString('\n')
-		line2, _  = reader.ReadString('\n')
-		line3, _  = reader.ReadString('\n')
-		repeated  byte
 		total     = 0
+		repeated  byte
 	)
-	for line3 != "" {
+	for {
+	exit:
+		line1, _ := reader.ReadString('\n')
+		line2, _ := reader.ReadString('\n')
+		line3, _ := reader.ReadString('\n')
+		if line3 == "" {
+			return total
+		}
 		for i := range line1 {
 			for y := range line2 {
 				for j := range line3 {
 					if line1[i] == line2[y] && line1[i] == line3[j] {
 						repeated = line2[y]
-						goto end
+						total += charScore[repeated]
+						goto exit
 					}
 				}
 			}
 		}
-	end:
-		total += charScore[repeated]
-		line1, _ = reader.ReadString('\n')
-		line2, _ = reader.ReadString('\n')
-		line3, _ = reader.ReadString('\n')
 	}
-	return total
 }
 
 func main() {
