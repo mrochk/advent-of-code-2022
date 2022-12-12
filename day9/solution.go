@@ -8,15 +8,9 @@ import (
 	"strings"
 )
 
-const SIZE = 1000
+const size = 1000
 
-type Grid [SIZE][SIZE]string
-
-func (grid Grid) printGrid() {
-	for i := range grid {
-		fmt.Println(grid[i])
-	}
-}
+type Grid [size][size]string
 
 type Coordinates struct {
 	x, y int
@@ -29,9 +23,16 @@ func checkVisited(square *string, res *int) {
 	}
 }
 
-func compare(coordH, coordT *Coordinates) {
-	if coordT.x != coordH.x {
-		coordT.x = coordH.x
+func cmp(x bool, coordH, coordT *Coordinates) {
+	if x {
+		if coordT.x != coordH.x {
+			coordT.x = coordH.x
+		}
+	} else {
+
+		if coordT.y != coordH.y {
+			coordT.y = coordH.y
+		}
 	}
 }
 
@@ -40,71 +41,63 @@ func part1() int {
 		grid     Grid
 		input, _ = os.Open("input.txt")
 		reader   = bufio.NewReader(input)
-		startX   = SIZE / 2
-		startY   = SIZE / 2
-		coordH   = Coordinates{startX, startY}
-		coordT   = coordH
+		startX   = size / 2
+		startY   = startX
+		head     = Coordinates{startX, startY}
+		tail     = head
 		result   = 1
 	)
-	grid[coordT.x][coordT.y] = "#"
-	grid[coordH.x][coordH.y] = "#"
+	grid[head.x][head.y] = "#"
 	for {
 		line, _ := reader.ReadString('\n')
 		if line == "" {
 			break
 		}
 		line = strings.Trim(line, "\n")
-		var (
-			args    = strings.Split(line, " ")
-			iter, _ = strconv.Atoi(args[1])
-		)
+		args := strings.Split(line, " ")
+		iter, _ := strconv.Atoi(args[1])
 		switch args[0] {
 		case "R":
 			for ; iter > 0; iter-- {
-				coordH.y++
-				if coordH.y-coordT.y > 1 {
-					coordT.y++
-					compare(&coordH, &coordT)
+				head.y++
+				if head.y-tail.y > 1 {
+					tail.y++
+					cmp(true, &head, &tail)
 				}
-				checkVisited(&grid[coordT.x][coordT.y], &result)
+				checkVisited(&grid[tail.x][tail.y], &result)
 			}
 		case "L":
 			for ; iter > 0; iter-- {
-				coordH.y--
-				if coordT.y-coordH.y > 1 {
-					coordT.y--
-					compare(&coordH, &coordT)
+				head.y--
+				if tail.y-head.y > 1 {
+					tail.y--
+					cmp(true, &head, &tail)
 				}
-				checkVisited(&grid[coordT.x][coordT.y], &result)
+				checkVisited(&grid[tail.x][tail.y], &result)
 			}
 		case "U":
 			for ; iter > 0; iter-- {
-				coordH.x--
-				if coordT.x-coordH.x > 1 {
-					coordT.x--
-					compare(&coordH, &coordT)
+				head.x--
+				if tail.x-head.x > 1 {
+					tail.x--
+					cmp(false, &head, &tail)
 				}
-				checkVisited(&grid[coordT.x][coordT.y], &result)
+				checkVisited(&grid[tail.x][tail.y], &result)
 			}
 		case "D":
 			for ; iter > 0; iter-- {
-				coordH.x++
-				if coordH.x-coordT.x > 1 {
-					coordT.x++
-					compare(&coordH, &coordT)
+				head.x++
+				if head.x-tail.x > 1 {
+					tail.x++
+					cmp(false, &head, &tail)
 				}
-				checkVisited(&grid[coordT.x][coordT.y], &result)
+				checkVisited(&grid[tail.x][tail.y], &result)
 			}
 		}
 	}
 	return result
 }
 
-func part2() int {
-	return 0
-}
-
 func main() {
 	fmt.Println("Solution to part one =>", part1())
-	fmt.Println("Solution to part two =>", part2())
 }
